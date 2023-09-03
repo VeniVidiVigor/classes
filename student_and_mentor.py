@@ -1,4 +1,5 @@
 class Student:
+    student_list = []
     def __init__(self, name, surname, gender):
         self.name = name
         self.surname = surname
@@ -6,6 +7,7 @@ class Student:
         self.finished_courses = []
         self.courses_in_progress = []
         self.grades = {}
+        Student.student_list.append(self)
 
     def get_feedback(self, lecturer, course, grade):
         if isinstance(lecturer, Lecturer) and course in lecturer.courses_attached \
@@ -29,8 +31,11 @@ class Student:
             return None
 
     def __str__(self):
-        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за д/з {self.average_marks()} /' \
-               f'\nКурсы в процессе изучения {self.courses_in_progress}\nЗавершенные курсы {self.finished_courses}'
+        return f'Имя: {self.name}' \
+               f'\nФамилия: {self.surname}' \
+               f'\nСредняя оценка за домашнее задание: {self.average_marks()}' \
+               f'\nКурсы в процессе изучения: {", ".join(self.courses_in_progress)}' \
+               f'\nЗавершенные курсы: {", ".join(self.finished_courses)}'
 
 
 class Mentor:
@@ -60,7 +65,9 @@ class Lecturer(Mentor):
             return None
 
     def __str__(self):
-        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за курс: {self.average_feedback()}'
+        return f'Имя: {self.name}' \
+               f'\nФамилия: {self.surname}' \
+               f'\nСредняя оценка за лекции: {self.average_feedback()}'
 
 
 class Reviewer(Mentor):
@@ -74,7 +81,8 @@ class Reviewer(Mentor):
             return 'Ошибка'
 
     def __str__(self):
-        return f'Имя: {self.name}\nФамилия: {self.surname}'
+        return f'Имя: {self.name}' \
+               f'\nФамилия: {self.surname}'
 
 
 def avg_studentmarks_course(students: list, cours: str):
@@ -84,7 +92,7 @@ def avg_studentmarks_course(students: list, cours: str):
         if isinstance(student, Student):
             if cours in student.grades:
                 sum_lst = sum(student.grades[cours])
-                lst_avg = sum_lst / len(student.grades[cours])
+                lst_avg += sum_lst / len(student.grades[cours])
                 count += 1
     return lst_avg / count
 
@@ -96,6 +104,62 @@ def avg_lecturerfeedback_course(lecturers: list, cours: str):
         if isinstance(lecturer, Lecturer):
             if cours in lecturer.feedback:
                 sum_lst = sum(lecturer.feedback[cours])
-                lst_avg = sum_lst / len(lecturer.feedback[cours])
+                lst_avg += sum_lst / len(lecturer.feedback[cours])
                 count += 1
     return lst_avg / count
+
+
+student1 = Student("Egor", "Semenov", "Male")
+student2 = Student("Elena", "Popova", "Female")
+student1.finished_courses.append('Git')
+student2.finished_courses.append('Django')
+student1.courses_in_progress = ["Python", "SQL", "Django", "Flask"]
+student2.courses_in_progress = ["Python", "SQL", "Git", "Flask", "API"]
+
+
+reviewer1 = Reviewer('Konstantin', 'Meshkov')
+reviewer2 = Reviewer('Georgiy', 'Kolosov')
+reviewer1.courses_attached = ["Python", "SQL", "Django", "Flask"]
+reviewer2.courses_attached = ["Python", "SQL", "Git", "Flask", "API"]
+reviewer1.rate_hw(student1, "Python", 5)
+reviewer1.rate_hw(student1, "SQL", 4)
+reviewer1.rate_hw(student1, "Django", 4)
+reviewer1.rate_hw(student1, "Flask", 5)
+reviewer2.rate_hw(student2, "Python", 4)
+reviewer2.rate_hw(student2, "SQL", 3)
+reviewer2.rate_hw(student2, "Git", 5)
+reviewer2.rate_hw(student2, "Flask", 5)
+reviewer2.rate_hw(student2, "API", 5)
+
+
+lector1 = Lecturer('Alexander', 'Kuzmin')
+lector2 = Lecturer('Aleksei', 'Smirnov')
+lector1.courses_attached = ["Python", "SQL", "Django"]
+lector2.courses_attached = ["Git", "Flask", "API"]
+student1.get_feedback(lector1, "Python", 10)
+student1.get_feedback(lector1, "SQL", 6)
+student1.get_feedback(lector1, "Django", 8)
+student2.get_feedback(lector2, "Git", 9)
+student2.get_feedback(lector2, "Flask", 8)
+student2.get_feedback(lector2, "API", 10)
+
+
+print("--------Students--------")
+print(student1)
+print(student1.grades)
+print("----------")
+print(student2)
+print(student2.grades)
+print("--------Reviewers--------")
+print(reviewer1)
+print("----------")
+print(reviewer2)
+print("--------Lecturers--------")
+print(lector1)
+print(lector1.feedback)
+print("----------")
+print(lector2)
+print(lector2.feedback)
+
+print(avg_studentmarks_course(Student.student_list, 'Python'))
+print(avg_lecturerfeedback_course(Lecturer.feedback_list, 'Python'))
