@@ -17,6 +17,21 @@ class Student:
         else:
             print("Некорректная оценка")
 
+    def average_marks(self):
+        sum_marks = 0
+        count_marks = 0
+        for mark in self.grades.values():
+            sum_marks += sum(mark)
+            count_marks += len(mark)
+        if count_marks != 0:
+            return sum_marks / count_marks
+        else:
+            return None
+
+    def __str__(self):
+        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за д/з {self.average_marks()} /' \
+               f'\nКурсы в процессе изучения {self.courses_in_progress}\nЗавершенные курсы {self.finished_courses}'
+
 
 class Mentor:
     def __init__(self, name, surname):
@@ -33,6 +48,19 @@ class Lecturer(Mentor):
         self.feedback = {}
         Lecturer.feedback_list.append(self)
 
+    def average_feedback(self):
+        sum_feedback = 0
+        count_feedback = 0
+        for feedback in self.feedback.values():
+            sum_feedback += sum(feedback)
+            count_feedback += len(feedback)
+        if count_feedback != 0:
+            return sum_feedback / count_feedback
+        else:
+            return None
+
+    def __str__(self):
+        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за курс: {self.average_feedback()}'
 
 
 class Reviewer(Mentor):
@@ -45,15 +73,29 @@ class Reviewer(Mentor):
         else:
             return 'Ошибка'
 
+    def __str__(self):
+        return f'Имя: {self.name}\nФамилия: {self.surname}'
 
-best_student = Student('Ruoy', 'Eman', 'your_gender')
-best_student.courses_in_progress += ['Python']
 
-cool_mentor = Mentor('Some', 'Buddy')
-cool_mentor.courses_attached += ['Python']
+def avg_studentmarks_course(students: list, cours: str):
+    count = 0
+    lst_avg = 0
+    for student in students:
+        if isinstance(student, Student):
+            if cours in student.grades:
+                sum_lst = sum(student.grades[cours])
+                lst_avg = sum_lst / len(student.grades[cours])
+                count += 1
+    return lst_avg / count
 
-cool_mentor.rate_hw(best_student, 'Python', 10)
-cool_mentor.rate_hw(best_student, 'Python', 10)
-cool_mentor.rate_hw(best_student, 'Python', 10)
 
-print(best_student.grades)
+def avg_lecturerfeedback_course(lecturers: list, cours: str):
+    count = 0
+    lst_avg = 0
+    for lecturer in lecturers:
+        if isinstance(lecturer, Lecturer):
+            if cours in lecturer.feedback:
+                sum_lst = sum(lecturer.feedback[cours])
+                lst_avg = sum_lst / len(lecturer.feedback[cours])
+                count += 1
+    return lst_avg / count
