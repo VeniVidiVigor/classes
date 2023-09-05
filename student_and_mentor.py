@@ -37,6 +37,16 @@ class Student:
                f'\nКурсы в процессе изучения: {", ".join(self.courses_in_progress)}' \
                f'\nЗавершенные курсы: {", ".join(self.finished_courses)}'
 
+    def __eq__(self, other):
+        if not isinstance(other, Student):
+            raise TypeError('Операнд справа должен иметь тип Lecturer')
+        return self.average_marks() == other.average_marks()
+
+    def __lt__(self, other):
+        if not isinstance(other, Student):
+            raise TypeError('Операнд справа должен иметь тип Lecturer')
+        return self.average_marks() < other.average_marks()
+
 
 class Mentor:
     def __init__(self, name, surname):
@@ -160,6 +170,11 @@ print(lector1.feedback)
 print("----------")
 print(lector2)
 print(lector2.feedback)
+
+
+print(student1 == student2)
+print(student1 < student2)
+
 
 print(avg_studentmarks_course(Student.student_list, 'Python'))
 print(avg_lecturerfeedback_course(Lecturer.feedback_list, 'Python'))
